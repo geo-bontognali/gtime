@@ -2,18 +2,21 @@ using gtime.Models;
 
 namespace gtime;
 
-public class InMemoryRepo
+public class InMemoryRepo : IRepository
 {
     private List<TrackingEntry> trackingData = [];
 
-    public IReadOnlyList<TrackingEntry> ReadAll() => trackingData.AsReadOnly();
-
-    public TrackingEntry? Read(Guid id)
+    public async Task<TrackingEntry[]> GetDay()
     {
-        return trackingData.FirstOrDefault(x => x.Id == id);
+        return trackingData.ToArray();
     }
-    
-    public void Add(TrackingEntry entry)
+
+    public async Task<TrackingEntry[]> GetDay(DateTime date)
+    {
+        return trackingData.ToArray();
+    }
+
+    public async Task Add(TrackingEntry entry)
     {
         trackingData.Add(entry);
     }

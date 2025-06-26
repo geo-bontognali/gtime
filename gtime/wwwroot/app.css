@@ -1,5 +1,32 @@
+:root {
+    /* Palette */
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --surface-var: #242424;
+    --text: #e0e0e0;
+    --muted: #9e9e9e;
+    --outline: #444;
+
+    /* Semantic colours */
+    --active: #4caf50; /* green  */
+    --afk:    #f44336; /* red    */
+    --accent: #2196f3; /* blue   */
+
+    /* Sizing */
+    --bar-height: 56px;
+    --radius: 8px;
+    --pad-s: 4px;
+    --pad-m: 8px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #121212;
 }
 
 a, .btn-link {
@@ -58,3 +85,86 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+
+
+/* TIMELINE PAGE */
+.timeline-wrapper {
+    width: 100%;
+}
+
+/* Main bar -----------------------------------------------------------*/
+.timeline-bar {
+    position: relative;
+    height: var(--bar-height);
+    background: var(--surface-var);
+    border: 1px solid var(--outline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,.4) inset;
+    user-select: none;
+}
+
+/* Activity blocks ----------------------------------------------------*/
+.activity {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    /* label inside block */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+}
+.activity:hover { opacity: .85; }
+
+/* Hover tooltip (follows cursor) ------------------------------------*/
+.floating-infobox {
+    position: fixed; /* follow the page, not bar */
+    z-index: 1000;
+    display: none;
+    pointer-events: none;
+    padding: var(--pad-s) var(--pad-m);
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: var(--radius);
+    white-space: pre-line;
+}
+
+/* Drag‑selection overlay --------------------------------------------*/
+.selection {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(33, 150, 243, .25);
+    border: 2px dashed var(--accent);
+    border-radius: calc(var(--radius) - 2px);
+    pointer-events: none;
+}
+
+.infobox {
+    position: absolute;
+    top: calc(-1 * var(--bar-height) / 1.8);
+    transform: translateX(-50%);
+    padding: var(--pad-s) var(--pad-m);
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Time labels --------------------------------------------------------*/
+.time-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+.time-labels span { position: relative; left: -0.6ch; }

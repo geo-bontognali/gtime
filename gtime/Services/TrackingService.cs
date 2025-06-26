@@ -16,11 +16,11 @@ public class TrackingService
     private const int frequency = 2; // Target: 30sec
     private const int inactivityThreshold = 4;
     private readonly Queue<CursorPosition> cursorPositionBuffer = new (inactivityThreshold);
-    private readonly InMemoryRepo DB;
+    private readonly IRepository repo;
 
-    public TrackingService(InMemoryRepo db)
+    public TrackingService(IRepository repo)
     {
-        DB = db;
+        this.repo = repo;
     }
     
     public async Task RunAsync()
@@ -48,7 +48,7 @@ public class TrackingService
                 Activity = CurrentActivity,
                 UserState = CurrentUserState
             };
-            DB.Add(entry);         
+            await repo.Add(entry);         
             
             
             if(OnNewTrackingData is not null)
