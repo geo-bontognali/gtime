@@ -20,6 +20,11 @@ public partial class Home
     protected override async Task OnInitializedAsync()
     {
         timelineEntries = await BuildTimeline();
+        /*timelineEntries =
+        [
+            new TimelineEntry(){ Start="06:00", End="09:00", Type="active", Title="Morning Focus", Description="Implement new feature" },
+            new TimelineEntry(){ Start="14:00", End="18:00", Type="afk", Title="away", Description="Implement new feature" }
+        ];*/
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -33,7 +38,7 @@ public partial class Home
 
     private async Task<TimelineEntry[]> BuildTimeline()
     {
-        const int sliceLength = 30;                     // seconds per TrackingEntry
+        const int sliceLength = 5;                     // seconds per TrackingEntry
         var trackingEntries = (await Repo.GetDay())
                              .OrderBy(te => te.CreatedOn) // local time already
                              .ToList();

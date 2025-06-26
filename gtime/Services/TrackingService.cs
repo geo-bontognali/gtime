@@ -13,7 +13,7 @@ public class TrackingService
     public UserState CurrentUserState { get; private set; } = UserState.Active;
     
     private bool cancellationFlag = false;
-    private const int frequency = 2; // Target: 30sec
+    private const int frequency = 5; // Target: 30sec
     private const int inactivityThreshold = 4;
     private readonly Queue<CursorPosition> cursorPositionBuffer = new (inactivityThreshold);
     private readonly IRepository repo;
