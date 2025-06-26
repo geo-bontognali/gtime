@@ -1,0 +1,22 @@
+<div class="warning-card">
+    <h3>Missing dependency</h3>
+    <p>This tool needs <i>hypridle</i> to track your activities.</p>
+    
+    <h4>Installation</h4>
+    <p class="config-txt">yay -S hypridle</p>
+    
+    <h4>Configuration</h4>
+    <p>Hypridle needs a config file. Add the configuration to ~/.config/hypr/hypridle.conf. <br />
+        Configure your timeout time in seconds.</p>
+    <p class="config-txt">
+        listener {
+        timeout = 120
+        on-timeout = echo 1 > /tmp/.gtime_ipc;
+        on-resume = echo 0 > /tmp/.gtime_ipc;
+        }
+    </p>
+    <p>Configure hypridle to run at startup by adding the following to your hyprland configuration under ~/.config/hypr/hypridle.conf</p>
+    <p class="config-txt">
+        exec-once = hypridle
+    </p>
+</div>

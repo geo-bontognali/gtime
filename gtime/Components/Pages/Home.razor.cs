@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 
 namespace gtime.Components.Pages;
 
-public partial class Home
+public partial class Home : ComponentBase
 {
     [Inject]
     public required TrackingService TrackingService { get; set; }
@@ -16,10 +16,12 @@ public partial class Home
 
     private IJSObjectReference? js;
     private TimelineEntry[] timelineEntries = [];
+    private bool showMissingDependencyWarning = false;
 
     protected override async Task OnInitializedAsync()
     {
         timelineEntries = await BuildTimeline();
+        showMissingDependencyWarning = !TrackingService.IsHypridleInstalled();
         /*timelineEntries =
         [
             new TimelineEntry(){ Start="06:00", End="09:00", Type="active", Title="Morning Focus", Description="Implement new feature" },
@@ -56,9 +58,9 @@ public partial class Home
         {
             var curr = trackingEntries[i];
 
-            var sameState     = curr.UserState == groupStart.UserState;
+            var sameState     = curr.IsIdle == groupStart.IsIdle;
             var sameActivity  = 
-                groupStart.UserState != UserState.Active || curr.Activity?.Class == groupStart.Activity?.Class
+                groupStart.IsIdle || curr.Activity?.Class == groupStart.Activity?.Class
                 && curr.Activity?.Title == groupStart.Activity?.Title; // AFK groups only care about state
 
             if (!sameState || !sameActivity)
@@ -80,8 +82,7 @@ public partial class Home
         TimelineEntry ToTimelineEntry(TrackingEntry first, TrackingEntry last)
         {
             var endStamp = last.CreatedOn.AddSeconds(sliceLength); // inclusive visual range
-
-            var isActive = first.UserState == UserState.Active;
+            var isActive = !first.IsIdle; 
 
             return new TimelineEntry
             {

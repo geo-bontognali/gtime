@@ -5,24 +5,17 @@ using Activity = gtime.Models.Activity;
 
 namespace gtime.Services;
 
-public class TrackingService
+public class TrackingService(IRepository repo)
 {
     public Activity? CurrentActivity { get; private set; }
+    public bool IsIdle { get; private set; }
     public event Func<Task> OnNewTrackingData = null!;
-    public CursorPosition? CurrentCursorPosition { get; private set; }
-    public UserState CurrentUserState { get; private set; } = UserState.Active;
+    public event Func<Task> OnIpcError = null!;
     
+    private const int frequencyInSeconds = 5; 
+    private const string ipcPath = "/tmp/.gtime_ipc"; // Ensure this is of type tmpfs
     private bool cancellationFlag = false;
-    private const int frequency = 5; // Target: 30sec
-    private const int inactivityThreshold = 4;
-    private readonly Queue<CursorPosition> cursorPositionBuffer = new (inactivityThreshold);
-    private readonly IRepository repo;
 
-    public TrackingService(IRepository repo)
-    {
-        this.repo = repo;
-    }
-    
     public async Task RunAsync()
     {
         while (!cancellationFlag)
@@ -30,56 +23,45 @@ public class TrackingService
             CurrentActivity = GetCurrentActivity();
             if (CurrentActivity is not null)
                 Console.WriteLine($"Current Activity: {CurrentActivity.Title}");
-            
-            CurrentCursorPosition = GetCurrentCursorPosition();
-            if (CurrentCursorPosition is null)
-            {
-                CurrentUserState = UserState.Inactive;
-            }
-            else
-            {
-                Console.WriteLine($"Current Cursor Position: {CurrentCursorPosition}");
-                CurrentUserState = GetUserState(CurrentCursorPosition); 
-            }
-            Console.WriteLine($"Current User State: {CurrentUserState}");
+
+            IsIdle = await IsIdleAsync(); 
+            Console.WriteLine($"Is user Idle: {IsIdle}");
 
             var entry = new TrackingEntry()
             {
                 Activity = CurrentActivity,
-                UserState = CurrentUserState
+                IsIdle = IsIdle
             };
+            
             await repo.Add(entry);         
-            
-            
-            if(OnNewTrackingData is not null)
-                await OnNewTrackingData.Invoke();
-
-            await Task.Delay(frequency * 1000);
+            OnNewTrackingData?.Invoke();
+            await Task.Delay(frequencyInSeconds * 1000);
         }
         
         cancellationFlag = false;
     }
 
-    public void Stop()
+    public bool IsHypridleInstalled()
     {
-        cancellationFlag = true;
+        var res = BashExec("which hypridle | grep 'no hypridle'");
+        if (string.IsNullOrEmpty(res))
+            return true;
+        return false;
     }
 
-    private UserState GetUserState(CursorPosition currentCursorPosition)
+    private async Task<bool> IsIdleAsync()
     {
-        if(cursorPositionBuffer.Count >= inactivityThreshold)
-            cursorPositionBuffer.Dequeue();
-        
-        cursorPositionBuffer.Enqueue(currentCursorPosition);
-
-        if (cursorPositionBuffer.Count < inactivityThreshold)
-            return UserState.Active;
-        
-        for (var i = (cursorPositionBuffer.Count - 1); i > 0; i--)
-            if (cursorPositionBuffer.ToArray()[i] != cursorPositionBuffer.ToArray()[i - 1])
-                return UserState.Active;
-        
-        return UserState.Inactive;
+        try
+        {
+            var isIdle = (await File.ReadAllTextAsync(ipcPath))[..1] == "1";
+            return isIdle;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            OnIpcError?.Invoke();
+        }
+        return false;
     }
 
     private static Activity? GetCurrentActivity()
@@ -106,24 +88,6 @@ public class TrackingService
         }
     }
 
-    private static CursorPosition? GetCurrentCursorPosition()
-    {
-        var result = BashExec("hyprctl cursorpos");
-        
-        try
-        {
-            var x = int.Parse(result.Split(", ")[0]);
-            var y = int.Parse(result.Split(", ")[1]);
-            return new CursorPosition(x, y);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            Console.WriteLine(result);
-            return null;
-        }
-    }
-    
     private static string BashExec(string cmd)
     {
         var psi = new ProcessStartInfo

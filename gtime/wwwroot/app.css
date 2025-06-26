@@ -24,6 +24,10 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1.5rem;
 }
 
+p {
+    color: var(--text);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: #121212;
@@ -31,6 +35,30 @@ html, body {
 
 a, .btn-link {
     color: #006bb7;
+}
+
+.info-card {
+    background-color: #2a77b3;
+    border-radius: 7px;
+    border: 2px dashed #006bb7;
+    padding: 15px;
+    margin: 10px;
+}
+
+.warning-card {
+    background-color: #661c14;
+    border-radius: 7px;
+    border: 2px dashed #f44336;
+    padding: 15px;
+    margin: 10px;
+}
+
+.config-txt {
+    border: 1px dotted var(--accent);
+    background-color:  var(--surface-var);
+    border-radius: 5px;
+    padding: 6px;
+    font-style: italic;
 }
 
 .btn-primary {

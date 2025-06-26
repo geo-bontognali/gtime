@@ -2,12 +2,12 @@
 @using gtime.Models
 
 <h3>Debug</h3>
-
-User State: @TrackingService.CurrentUserState <br />
+<p>
+Idle: @TrackingService.IsIdle <br />
 Timestamp: @TrackingService.CurrentActivity?.UtcDateTime <br />
-Cursor Coordinates: @TrackingService.CurrentCursorPosition?.X x @TrackingService.CurrentCursorPosition?.Y<br />
-@if (TrackingService.CurrentUserState == UserState.Active)
+@if (!TrackingService.IsIdle)
 {
     <span>Program: </span> @TrackingService.CurrentActivity?.Class <br/>
     <span>Activity: </span> @TrackingService.CurrentActivity?.Title <br/>
 }
+</p>
