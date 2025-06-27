@@ -6,14 +6,14 @@ public class InMemoryRepo : IRepository
 {
     private List<TrackingEntry> trackingData = [];
 
-    public async Task<TrackingEntry[]> GetDay()
+    public async Task<List<TrackingEntry>> GetDay()
     {
-        return trackingData.ToArray();
+        return trackingData.ToList();
     }
 
-    public async Task<TrackingEntry[]> GetDay(DateTime date)
+    public async Task<List<TrackingEntry>> GetDay(DateTime date)
     {
-        return trackingData.ToArray();
+        return trackingData.ToList();
     }
 
     public async Task Add(TrackingEntry entry)

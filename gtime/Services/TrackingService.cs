@@ -11,8 +11,8 @@ public class TrackingService(IRepository repo)
     public bool IsIdle { get; private set; }
     public event Func<Task> OnNewTrackingData = null!;
     public event Func<Task> OnIpcError = null!;
+    public int FrequencyInSeconds { get; }= 5; 
     
-    private const int frequencyInSeconds = 5; 
     private const string ipcPath = "/tmp/.gtime_ipc"; // Ensure this is of type tmpfs
     private bool cancellationFlag = false;
 
@@ -26,6 +26,7 @@ public class TrackingService(IRepository repo)
 
             IsIdle = await IsIdleAsync(); 
             Console.WriteLine($"Is user Idle: {IsIdle}");
+            Console.WriteLine($"Timestamp: {DateTime.Now}");
 
             var entry = new TrackingEntry()
             {
@@ -35,7 +36,7 @@ public class TrackingService(IRepository repo)
             
             await repo.Add(entry);         
             OnNewTrackingData?.Invoke();
-            await Task.Delay(frequencyInSeconds * 1000);
+            await Task.Delay(FrequencyInSeconds * 1000);
         }
         
         cancellationFlag = false;

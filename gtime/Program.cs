@@ -7,7 +7,7 @@ using ElectronApp = gtime.Components.App;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddElectron();
 builder.Services.AddSingleton<TrackingService>();
-builder.Services.AddSingleton<IRepository, InMemoryRepo>();
+builder.Services.AddSingleton<IRepository, JsonRepo>();
     
 builder.WebHost.UseElectron(args);
 

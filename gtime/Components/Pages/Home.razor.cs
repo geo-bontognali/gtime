@@ -20,13 +20,8 @@ public partial class Home : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        timelineEntries = await BuildTimeline();
+        timelineEntries = await BuildTimelineAsync();
         showMissingDependencyWarning = !TrackingService.IsHypridleInstalled();
-        /*timelineEntries =
-        [
-            new TimelineEntry(){ Start="06:00", End="09:00", Type="active", Title="Morning Focus", Description="Implement new feature" },
-            new TimelineEntry(){ Start="14:00", End="18:00", Type="afk", Title="away", Description="Implement new feature" }
-        ];*/
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -38,11 +33,11 @@ public partial class Home : ComponentBase
         }
     }
 
-    private async Task<TimelineEntry[]> BuildTimeline()
+    private async Task<TimelineEntry[]> BuildTimelineAsync()
     {
-        const int sliceLength = 5;                     // seconds per TrackingEntry
+        var sliceLength = TrackingService.FrequencyInSeconds;
         var trackingEntries = (await Repo.GetDay())
-                             .OrderBy(te => te.CreatedOn) // local time already
+                             .OrderBy(te => te.CreatedOn) 
                              .ToList();
 
         if (trackingEntries.Count == 0)
@@ -50,7 +45,6 @@ public partial class Home : ComponentBase
 
         var timeline = new List<TimelineEntry>();
 
-        // seed the first group
         var groupStart   = trackingEntries[0];
         var prev         = groupStart;
 
@@ -61,27 +55,24 @@ public partial class Home : ComponentBase
             var sameState     = curr.IsIdle == groupStart.IsIdle;
             var sameActivity  = 
                 groupStart.IsIdle || curr.Activity?.Class == groupStart.Activity?.Class
-                && curr.Activity?.Title == groupStart.Activity?.Title; // AFK groups only care about state
+                && curr.Activity?.Title == groupStart.Activity?.Title; 
 
             if (!sameState || !sameActivity)
             {
-                // close current bundle
                 timeline.Add(ToTimelineEntry(groupStart, prev));
-                groupStart = curr;          // start a new bundle
+                groupStart = curr;          
             }
 
-            prev = curr;                    // advance sliding window
+            prev = curr;                   
         }
 
-        // flush last bundle
         timeline.Add(ToTimelineEntry(groupStart, prev));
 
         return timeline.ToArray();
 
-        // local function: converts a group’s first/last TrackingEntry into a TimelineEntry
         TimelineEntry ToTimelineEntry(TrackingEntry first, TrackingEntry last)
         {
-            var endStamp = last.CreatedOn.AddSeconds(sliceLength); // inclusive visual range
+            var endStamp = last.CreatedOn.AddSeconds(sliceLength);
             var isActive = !first.IsIdle; 
 
             return new TimelineEntry
@@ -89,8 +80,8 @@ public partial class Home : ComponentBase
                 Start       = first.CreatedOn.ToString("HH:mm"),
                 End         = endStamp.ToString("HH:mm"),
                 Type        = isActive ? "active" : "afk",
-                Title       = isActive ? first.Activity!.Class : "away",
-                Description = isActive ? first.Activity!.Title : string.Empty
+                Title       = isActive ? (first.Activity is not null) ? first.Activity.Class : "unknow" : "away",
+                Description = isActive ? (first.Activity is not null) ? first.Activity.Title : string.Empty : string.Empty
             };
         }
     }

@@ -33,7 +33,7 @@ const moveTip = (x, y) => {
     tooltip.style.top  = y + 12 + 'px';
 };
 
-const hideTip = () => { tooltip.style.display = 'block'; };
+const hideTip = () => { tooltip.style.display = 'none'; };
 
 /* ------------------------------------------------------------------ *
  * Build timeline                                                      *
@@ -60,6 +60,8 @@ function renderBlocks() {
 
         bar.appendChild(block);
     });
+    document.querySelector('#loader-container').style.display = 'none';
+    document.querySelector('#timeline-wrapper').style.display = 'block';
 }
 
 /* ------------------------------------------------------------------ *
@@ -103,8 +105,14 @@ function enableDragSelection() {
 
         // Time maths
         const selStart = ((x1 - rect.left) / rect.width) * DAY_MIN;
+        const selStartHM = [Math.floor(selStart / 60), Math.floor(selStart % 60)].map(n => n.toString().padStart(2, '0')).join(':');
         const selEnd   = ((x2 - rect.left) / rect.width) * DAY_MIN;
+        const selEndHM = [Math.floor(selEnd / 60), Math.floor(selEnd % 60)].map(n => n.toString().padStart(2, '0')).join(':');
         const selDur   = Math.round(selEnd - selStart);
+        
+        console.log(selStart);
+        console.log(selEnd);
+        
 
         // Active minutes within selection
         let activeMin = 0;
@@ -117,7 +125,7 @@ function enableDragSelection() {
         activeMin = Math.round(activeMin);
 
         // Update info bubble
-        info.textContent = `${fmt(selDur)} | active ${fmt(activeMin)}`;
+        info.textContent = `total ${fmt(selDur)} | active ${fmt(activeMin)} | start ${selStartHM} end ${selEndHM}`;
         info.style.left  = ((x1 + x2) / 2 - rect.left) + 'px';
     }
 }

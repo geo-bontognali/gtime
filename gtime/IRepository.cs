@@ -5,6 +5,6 @@ namespace gtime;
 public interface IRepository
 {
     Task Add(TrackingEntry entry);
-    Task<TrackingEntry[]> GetDay();
-    Task<TrackingEntry[]> GetDay(DateTime date);
+    Task<List<TrackingEntry>> GetDay();
+    Task<List<TrackingEntry>> GetDay(DateTime date);
 }
