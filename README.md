@@ -13,9 +13,9 @@ electronize start /watch
 ### Build
 
 ```
-dotnet electronize build /target win
-dotnet electronize build /target osx
-dotnet electronize build /target linux
+electronize build /target win
+electronize build /target osx
+electronize build /target linux
 ``` 
 
 

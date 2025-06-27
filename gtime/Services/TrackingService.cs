@@ -11,7 +11,7 @@ public class TrackingService(IRepository repo)
     public bool IsIdle { get; private set; }
     public event Func<Task> OnNewTrackingData = null!;
     public event Func<Task> OnIpcError = null!;
-    public int FrequencyInSeconds { get; }= 5; 
+    public int FrequencyInSeconds { get; } = 30; 
     
     private const string ipcPath = "/tmp/.gtime_ipc"; // Ensure this is of type tmpfs
     private bool cancellationFlag = false;

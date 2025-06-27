@@ -110,10 +110,6 @@ function enableDragSelection() {
         const selEndHM = [Math.floor(selEnd / 60), Math.floor(selEnd % 60)].map(n => n.toString().padStart(2, '0')).join(':');
         const selDur   = Math.round(selEnd - selStart);
         
-        console.log(selStart);
-        console.log(selEnd);
-        
-
         // Active minutes within selection
         let activeMin = 0;
         timelineBlocks.forEach(evt => {
