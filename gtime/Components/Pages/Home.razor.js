@@ -21,14 +21,18 @@ const fmt = min => {
 /* ------------------------------------------------------------------ *
  * Tooltip                                                             *
  * ------------------------------------------------------------------ */
-const tooltip = $('#floating-infobox');
+let tooltip = $('#floating-infobox');
 const showTip  = (txt, x, y) => {
+    tooltip = $('#floating-infobox');
     tooltip.textContent = txt;
     tooltip.style.display = 'block';
+    console.log(txt, x, y);
+    console.log(tooltip.style.display);
     moveTip(x, y);
 };
 
 const moveTip = (x, y) => {
+    tooltip = $('#floating-infobox');
     tooltip.style.left = x + 12 + 'px';
     tooltip.style.top  = y + 12 + 'px';
 };

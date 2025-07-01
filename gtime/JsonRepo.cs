@@ -24,7 +24,10 @@ public class JsonRepo : IRepository
     {
         var jsonFile = Path.Combine(jsonPath, selectedDay.ToString("dd-MM-yyyy") + ".json");
         if (!File.Exists(jsonFile))
+        {
             trackingEntries = [];
+            return;
+        }
            
         var json = await File.ReadAllTextAsync(jsonFile);
         trackingEntries = JsonSerializer.Deserialize<List<TrackingEntry>>(json) ?? [];

@@ -137,7 +137,6 @@ h1:focus {
     position: absolute;
     top: 0;
     height: 100%;
-    border-radius: calc(var(--radius) - 2px);
     cursor: pointer;
     /* label inside block */
     display: flex;

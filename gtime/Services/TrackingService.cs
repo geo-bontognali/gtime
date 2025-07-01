@@ -8,6 +8,7 @@ namespace gtime.Services;
 public class TrackingService(IRepository repo)
 {
     public Activity? CurrentActivity { get; private set; }
+    public DateTime LastScan { get; private set; }
     public bool IsIdle { get; private set; }
     public event Func<Task> OnNewTrackingData = null!;
     public event Func<Task> OnIpcError = null!;
@@ -33,6 +34,7 @@ public class TrackingService(IRepository repo)
                 Activity = CurrentActivity,
                 IsIdle = IsIdle
             };
+            LastScan = entry.CreatedOn;
             
             await repo.Add(entry);         
             OnNewTrackingData?.Invoke();
@@ -54,8 +56,10 @@ public class TrackingService(IRepository repo)
     {
         try
         {
-            var isIdle = (await File.ReadAllTextAsync(ipcPath))[..1] == "1";
-            return isIdle;
+            if (File.Exists(ipcPath))
+                return (await File.ReadAllTextAsync(ipcPath))[..1] == "1"; 
+            
+            return false;
         }
         catch (Exception e)
         {
@@ -78,7 +82,7 @@ public class TrackingService(IRepository repo)
 
             if (activityTitle is null || activityClass is null)
                 return null;
-
+            
             return new Activity(activityTitle, activityClass);
         }
         catch (Exception e)

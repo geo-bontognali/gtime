@@ -10,7 +10,7 @@ public partial class Debug : ComponentBase
     
     protected override Task OnInitializedAsync()
     {
-        //TrackingService.OnNewTrackingData += Update;
+        TrackingService.OnNewTrackingData += Update;
         return base.OnInitializedAsync();
     }
 

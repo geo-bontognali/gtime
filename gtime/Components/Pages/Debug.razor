@@ -4,7 +4,7 @@
 <h3>Debug</h3>
 <p>
 Idle: @TrackingService.IsIdle <br />
-Timestamp: @TrackingService.CurrentActivity?.UtcDateTime <br />
+Timestamp: @TrackingService.LastScan <br />
 @if (!TrackingService.IsIdle)
 {
     <span>Program: </span> @TrackingService.CurrentActivity?.Class <br/>
