@@ -1,3 +1,5 @@
+using ElectronNET.API;
+using ElectronNET.API.Entities;
 using gtime.Models;
 using gtime.Services;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +15,7 @@ public partial class Home : ComponentBase
     public IJSRuntime JSRuntime { get; set; }
     [Inject]
     public required IRepository Repo { get; set; }
+
 
     private IJSObjectReference? js;
     private TimelineEntry[] timelineEntries = [];

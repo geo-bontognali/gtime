@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace gtime.Components.Pages;
 
-public partial class Debug : ComponentBase
+public partial class Debug : ComponentBase, IDisposable
 {
     [Inject]
     public required TrackingService TrackingService { get; set; }
@@ -17,5 +17,10 @@ public partial class Debug : ComponentBase
     private async Task Update()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TrackingService.OnNewTrackingData -= Update;
     }
 }

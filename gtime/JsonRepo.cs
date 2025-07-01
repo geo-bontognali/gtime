@@ -35,9 +35,17 @@ public class JsonRepo : IRepository
     
     public async Task SaveAsync()
     {
-        var jsonFile = Path.Combine(jsonPath, DateTime.UtcNow.ToLocalTime().ToString("dd-MM-yyyy") + ".json");
-        var json = JsonSerializer.Serialize(trackingEntries, new JsonSerializerOptions { WriteIndented = true });
-        await File.WriteAllTextAsync(jsonFile, json);
+        try
+        {
+            var jsonFile = Path.Combine(jsonPath, DateTime.UtcNow.ToLocalTime().ToString("dd-MM-yyyy") + ".json");
+            var json = JsonSerializer.Serialize(trackingEntries, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(jsonFile, json);
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine("Error saving tracking file");
+            Console.WriteLine(e);
+        }
     }
 
     public async Task Add(TrackingEntry entry)

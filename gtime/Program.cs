@@ -7,6 +7,7 @@ using ElectronApp = gtime.Components.App;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddElectron();
 builder.Services.AddSingleton<TrackingService>();
+builder.Services.AddSingleton<TrayManager>();
 builder.Services.AddSingleton<IRepository, JsonRepo>();
     
 builder.WebHost.UseElectron(args);
@@ -46,6 +47,7 @@ app.MapRazorComponents<ElectronApp>()
     .AddInteractiveServerRenderMode();
 
 var activityWatcher = app.Services.GetRequiredService<TrackingService>();
-_ = Task.Run(async () => { await activityWatcher.RunAsync(); }); // TODO: Handle errors
+_ = Task.Run(async () => { await activityWatcher.RunAsync(); }); 
+app.Services.GetRequiredService<TrayManager>();
 
 app.Run();
