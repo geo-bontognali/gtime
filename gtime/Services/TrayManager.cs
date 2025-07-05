@@ -19,7 +19,9 @@ public class TrayManager
                 Click = ShowWindow
             };
 
-            Electron.Tray.Show(Path.Combine(env.ContentRootPath, "Assets/electron_32x32.png"), menu);
+            var icon = Path.Combine(env.ContentRootPath, "wwwroot", "stopwatch.png");
+            Console.WriteLine(icon);
+            Electron.Tray.Show(icon, menu);
             Electron.Tray.SetToolTip("GTIME");
             Electron.Tray.OnClick += ShowWindowFromTray;
         }
@@ -32,9 +34,6 @@ public class TrayManager
 
     public void ShowWindow()
     {
-        if (!isHidden)
-            return;
-        
         Console.WriteLine("Showing...");
         var showCmd = GetEmbeddedScript("gtime.scripts.show_window.sh");
         BashExec(showCmd);
@@ -43,9 +42,6 @@ public class TrayManager
     
     public void HideWindow()
     {
-        if (isHidden)
-            return;
-        
         Console.WriteLine("Hiding...");
         var hideCmd = GetEmbeddedScript("gtime.scripts.hide_window.sh");
         BashExec(hideCmd);
