@@ -15,38 +15,50 @@ public class TrayManager
             Console.WriteLine("Setting up tray...");
             var menu = new MenuItem
             {
-                Label = "Toggle visibility",
-                Click = ToggleHide
+                Label = "Show",
+                Click = ShowWindow
             };
 
             Electron.Tray.Show(Path.Combine(env.ContentRootPath, "Assets/electron_32x32.png"), menu);
-            Electron.Tray.SetToolTip("GTIME - Rightclick to toggle visibility");
+            Electron.Tray.SetToolTip("GTIME");
+            Electron.Tray.OnClick += ShowWindowFromTray;
         }
-        
-        //ToggleHide();
     }
 
-    private void ToggleHide()
+    private void ShowWindowFromTray(TrayClickEventArgs _, Rectangle __)
+    {
+        ShowWindow();
+    }
+
+    public void ShowWindow()
+    {
+        if (!isHidden)
+            return;
+        
+        Console.WriteLine("Showing...");
+        var showCmd = GetEmbeddedScript("gtime.scripts.show_window.sh");
+        BashExec(showCmd);
+        isHidden = false;
+    }
+    
+    public void HideWindow()
     {
         if (isHidden)
-        {
-            Console.WriteLine("Showing...");
-            var showCmd =
-                "CURRENT_WS=$(hyprctl activeworkspace -j | jq -r '.id')\nWIN_ID=$(hyprctl clients -j | jq -r '.[] | select(.title == \"gtime\" ) | .address')\n\nif [ -n \"$WIN_ID\" ]; then\n  hyprctl dispatch movetoworkspacesilent \"$CURRENT_WS\" \"$WIN_ID\"\nfi\n";
-            var r = BashExec(showCmd);
-            Console.WriteLine(showCmd);
-            Console.WriteLine(r);
-        }
-        else
-        {
-            Console.WriteLine("Hiding...");
-            var hideCmd =
-                "WIN_ID=$(hyprctl clients -j | jq -r '.[] | select(.title == \"gtime\") | .address')\n\nif [ -n \"$WIN_ID\" ]; then\n  hyprctl dispatch movetoworkspacesilent 7 \"$WIN_ID\"\nfi";
-            var r = BashExec(hideCmd);
-            Console.WriteLine(hideCmd);
-            Console.WriteLine(r);
-        }
-        isHidden = !isHidden;
+            return;
+        
+        Console.WriteLine("Hiding...");
+        var hideCmd = GetEmbeddedScript("gtime.scripts.hide_window.sh");
+        BashExec(hideCmd);
+        isHidden = true;
+    }
+
+    private string GetEmbeddedScript(string resourceName)
+    {
+        var assembly = typeof(TrayManager).Assembly;
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream == null) throw new InvalidOperationException($"Resource not found: {resourceName}");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
     }
     
     

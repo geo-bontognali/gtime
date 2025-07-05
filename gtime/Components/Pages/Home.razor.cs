@@ -7,6 +7,8 @@ using Microsoft.JSInterop;
 
 namespace gtime.Components.Pages;
 
+using gtime.Services;
+
 public partial class Home : ComponentBase
 {
     [Inject]
@@ -15,6 +17,8 @@ public partial class Home : ComponentBase
     public IJSRuntime JSRuntime { get; set; }
     [Inject]
     public required IRepository Repo { get; set; }
+    [Inject] 
+    public TrayManager TrayManager { get; set; }
 
 
     private IJSObjectReference? js;
