@@ -7,20 +7,10 @@ using ElectronApp = gtime.Components.App;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddElectron();
 builder.Services.AddSingleton<TrackingService>();
-builder.Services.AddSingleton<InMemoryRepo>();
+builder.Services.AddSingleton<TrayManager>();
+builder.Services.AddSingleton<IRepository, JsonRepo>();
     
 builder.WebHost.UseElectron(args);
-
-if (HybridSupport.IsElectronActive)
-{
-    // Open the Electron-Window
-    Task.Run(async () => {
-        var window = await Electron.WindowManager.CreateWindowAsync();
-        window.OnClosed += () => {
-            Electron.App.Quit();
-        };
-    });
-}
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -46,6 +36,29 @@ app.MapRazorComponents<ElectronApp>()
     .AddInteractiveServerRenderMode();
 
 var activityWatcher = app.Services.GetRequiredService<TrackingService>();
-_ = Task.Run(async () => { await activityWatcher.RunAsync(); }); // TODO: Handle errors
+var trayManager = app.Services.GetRequiredService<TrayManager>();
+var reloadCount = 0;
+Task.Run(async () => { await activityWatcher.RunAsync(); }); 
+
+if (HybridSupport.IsElectronActive)
+{
+    Task.Run(async () => {
+        var window = await Electron.WindowManager.CreateWindowAsync();
+        window.OnClosed += () => {
+            Electron.App.Quit();
+        };
+        window.OnReadyToShow += () => {
+            if (reloadCount < 1)
+            {
+                window.Reload();
+                reloadCount++; 
+            }
+            else
+            {
+                trayManager.HideWindow();
+            }
+        };
+    });
+}
 
 app.Run();

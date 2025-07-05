@@ -1,9 +1,64 @@
+:root {
+    /* Palette */
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --surface-var: #242424;
+    --text: #e0e0e0;
+    --muted: #9e9e9e;
+    --outline: #444;
+
+    /* Semantic colours */
+    --active: #4caf50; /* green  */
+    --afk:    #f44336; /* red    */
+    --accent: #2196f3; /* blue   */
+
+    /* Sizing */
+    --bar-height: 56px;
+    --radius: 8px;
+    --pad-s: 4px;
+    --pad-m: 8px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+
+p {
+    color: var(--text);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #121212;
 }
 
 a, .btn-link {
     color: #006bb7;
+}
+
+.info-card {
+    background-color: #2a77b3;
+    border-radius: 7px;
+    border: 2px dashed #006bb7;
+    padding: 15px;
+    margin: 10px;
+}
+
+.warning-card {
+    background-color: #661c14;
+    border-radius: 7px;
+    border: 2px dashed #f44336;
+    padding: 15px;
+    margin: 10px;
+}
+
+.config-txt {
+    border: 1px dotted var(--accent);
+    background-color:  var(--surface-var);
+    border-radius: 5px;
+    padding: 6px;
+    font-style: italic;
 }
 
 .btn-primary {
@@ -57,4 +112,150 @@ h1:focus {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
+}
+
+
+
+/* TIMELINE PAGE */
+.timeline-wrapper {
+    width: 100%;
+}
+
+/* Main bar -----------------------------------------------------------*/
+.timeline-bar {
+    position: relative;
+    height: var(--bar-height);
+    background: var(--surface-var);
+    border: 1px solid var(--outline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,.4) inset;
+    user-select: none;
+}
+
+/* Activity blocks ----------------------------------------------------*/
+.activity {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    cursor: pointer;
+    /* label inside block */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #fff;
+}
+.activity:hover { opacity: .85; }
+
+/* Hover tooltip (follows cursor) ------------------------------------*/
+.floating-infobox {
+    position: fixed; /* follow the page, not bar */
+    z-index: 1000;
+    display: none;
+    pointer-events: none;
+    padding: var(--pad-s) var(--pad-m);
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: var(--radius);
+    white-space: pre-line;
+}
+
+/* Drag‑selection overlay --------------------------------------------*/
+.selection {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(33, 150, 243, .25);
+    border: 2px dashed var(--accent);
+    border-radius: calc(var(--radius) - 2px);
+    pointer-events: none;
+}
+
+.infobox {
+    position: absolute;
+    top: calc(-1 * var(--bar-height) / 1.8);
+    transform: translateX(-50%);
+    padding: var(--pad-s) var(--pad-m);
+    background: #000;
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Time labels --------------------------------------------------------*/
+.time-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+.time-labels span { position: relative; }
+
+/* Spinner -------------------------------------------*/
+
+.loader {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 6rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+}
+.loader:before,
+.loader:after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    animation: pulsOut 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 0 1rem rgba(255, 255, 255, 0.75));
+}
+.loader:before {
+    width: 100%;
+    padding-bottom: 100%;
+    box-shadow: inset 0 0 0 1rem #fff;
+    animation-name: pulsIn;
+}
+.loader:after {
+    width: calc(100% - 2rem);
+    padding-bottom: calc(100% - 2rem);
+    box-shadow: 0 0 0 0 #fff;
+}
+
+@keyframes pulsIn {
+    0% {
+        box-shadow: inset 0 0 0 1rem #fff;
+        opacity: 1;
+    }
+    50%, 100% {
+        box-shadow: inset 0 0 0 0 #fff;
+        opacity: 0;
+    }
+}
+
+@keyframes pulsOut {
+    0%, 50% {
+        box-shadow: 0 0 0 0 #fff;
+        opacity: 0;
+    }
+    100% {
+        box-shadow: 0 0 0 1rem #fff;
+        opacity: 1;
+    }
+}
+
+#loader-container {
+    margin: 0 auto;
+    width: 300px;
+    margin-top: 2%;
+}
+#timeline-wrapper {
+    margin-top: 2%;
+    display: none;
 }
